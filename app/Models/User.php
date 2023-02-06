@@ -40,4 +40,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // USER-PLAYER 1--N GAMES (Right Join) ... hasMany()
+    public function games(){
+        // return $this->hasMany(Game::class, 'id');
+        return $this->hasMany('App\Models\Game');
+    } 	
+    
 }
