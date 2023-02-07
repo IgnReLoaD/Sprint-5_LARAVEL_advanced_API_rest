@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\User;
+use App\Models\Game;
+
 class GameController extends Controller
 {
     /**
@@ -14,7 +17,13 @@ class GameController extends Controller
      */
     public function index()
     {
-        //
+        // IF ($objUser->id == ADMIN)
+        $recordsetGames = Game::all();          
+        // ELSE 
+        //      $recordsetGames = Game::select("*")->where('user_id','=',$objUser->id)->get()->sortByDesc('name');
+        // END IF
+        
+        return view('game.index')->with('recordsetGames',$recordsetGames);
     }
 
     /**
@@ -24,7 +33,15 @@ class GameController extends Controller
      */
     public function create()
     {
-        //
+        // ENUNCIAT:   En cas que la suma del resultat dels dos daus sigui 7, la partida és guanyada, si no és perduda. 
+
+        $objGame = new Game();
+        // després quan fem l'usuari podrem grabar en user_id el valor del seu ID
+        $objGame->user_id = '1';
+        $objGame->intResult1 = rand(1, 6);
+        $objGame->intResult2 = rand(1, 6);
+        $objGame->boolWinner = (($objGame->intResult1 + $objGame->intResult2) == 7);
+        $objGame->save();
     }
 
     /**
