@@ -22,7 +22,7 @@ class GameController extends Controller
         // ELSE 
         //      $recordsetGames = Game::select("*")->where('user_id','=',$objUser->id)->get()->sortByDesc('name');
         // END IF
-        
+        // test 
         return view('game.index')->with('recordsetGames',$recordsetGames);
     }
 
