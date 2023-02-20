@@ -39,13 +39,13 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/players/{id}', [UserController::class, 'edit'])->name('edit');
 
     // POST /players/{id}/games/ : un jugador/a específic realitza una tirada dels daus.
-    Route::post('/players/{id}/games', [GameController::class, 'play'])->name('play');
+    Route::post('/players/{id}/games',[GameController::class, 'play'])->name('play');
 
     // DELETE /players/{id}/games: elimina les tirades del jugador/a.
-    Route::delete('/players/{id}/games', [GameController::class, 'destroyUserScore'])->name('destroyUserScore'); 
+    Route::delete('/players/{id}/games',[GameController::class, 'destroyUserScore'])->name('destroyUserScore'); 
 
     // GET /players: retorna el llistat de tots els jugadors/es del sistema amb el seu percentatge mitjà d’èxits 
-    Route::get('/players', [GameController::class, 'allPlayersScore'])->name('allPlayersScore');
+    Route::get('/players',[GameController::class, 'allPlayersScore'])->name('allPlayersScore');
 
     // GET /players/{id}/games: retorna el llistat de jugades per un jugador/a.
     Route::get('/players/{id}/games', [GameController::class, 'showPlayerScore'])->name('showPlayerScore');
