@@ -55,7 +55,7 @@ class UserController extends Controller
             'password'=>'required',
         ]);
 
-        if(!auth()->attemp($loginData)) {
+        if(!auth()->attempt($loginData)) {
             return response([
                 'message' => 'Invalid credentials',
                 'status' => 401
@@ -81,32 +81,34 @@ class UserController extends Controller
         ]);
     }
 
-    public function edit(Request $request)
-    {
-        // $user_id = Auth::id();
-        return response([
-            'message' => 'debug:  entra en Edit'
-        ]);
-        die;
+    public function edit(Request $request, $id_player)
+    {        
+        // return response([
+        //     'message' => 'debug:  entra en Edit'
+        // ]);
+        // die;
 
-        $objUser = User::find($id);
+        $idUserLoggedIn = Auth::id();
+        $objUserToModif = User::find($id_player);
 
-        if (!$objUser){
+        if (!$objUserToModif){
             return response([
                 'message' => 'user not found',
                 'status' => 404,
             ]);
 
-        } elseif($user_id==$id)
+        } elseif($idUserLoggedIn==$id_player)
         {
+            
             $request->validate([
                 'name' =>'required|min:4|max:20|unique:users',
             ]);
-
-            $objUser->update($request->all());
+            // $objUserBefore = $objUserToModif;
+            $objUserToModif->update($request->all());
             return response([
                 'message' => 'updated successfully',
-                'user' => $objUser,
+                // 'user_old_data' => $objUserBefore,
+                'user_new_data' => $objUserToModif,
                 'status' => 200
             ]);
         }

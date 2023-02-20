@@ -25,7 +25,6 @@ use App\Http\Controllers\API\GameController;
 Route::post('/players', [UserController::class, 'register'])->name('register');
 // postman: email, contrasenya
 Route::post('/login', [UserController::class, 'login'])->name('login');
-Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -33,6 +32,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth:api'])->group(function () {
+
+    // POST /logout --> li passem el bearer token
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
     // PUT /players/{id} : modifica el nom del jugador/a.
     Route::put('/players/{id}', [UserController::class, 'edit'])->name('edit');
 
@@ -46,7 +48,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/players', [GameController::class, 'allPlayersScore'])->name('allPlayersScore');
 
     // GET /players/{id}/games: retorna el llistat de jugades per un jugador/a.
-    Route::get('/players/{id}/games', [GameController::class, 'showUserScore'])->name('showUserScore');
+    Route::get('/players/{id}/games', [GameController::class, 'showPlayerScore'])->name('showPlayerScore');
 
     // GET /players/ranking: retorna el rànquing mitjà de tots els jugadors/es del sistema. És a dir, el percentatge mitjà d’èxits.
     Route::get('/players/ranking', [GameController::class, 'ranking'])->name('ranking'); 
