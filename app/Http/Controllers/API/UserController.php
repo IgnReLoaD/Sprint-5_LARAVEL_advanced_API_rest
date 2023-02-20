@@ -81,35 +81,36 @@ class UserController extends Controller
         ]);
     }
 
-    public function edit(Request $request, $id_player)
+    public function edit(Request $request, $id_player )
     {        
         // return response([
         //     'message' => 'debug:  entra en Edit'
         // ]);
         // die;
 
-        $idUserLoggedIn = Auth::id();
-        $objUserToModif = User::find($id_player);
+        $idUserLoggedIn = Auth::id(); 
+        $objUserToModif = User::find($id_player); 
 
         if (!$objUserToModif){
             return response([
-                'message' => 'user not found',
+                'message' => 'user to modif not found',
                 'status' => 404,
             ]);
 
-        } elseif($idUserLoggedIn==$id_player)
+        } elseif($idUserLoggedIn == $id_player)
         {
             
             $request->validate([
-                'name' =>'required|min:4|max:20|unique:users',
+                'name' => 'required|min:4|max:20|unique:users',
             ]);
+
             // $objUserBefore = $objUserToModif;
-            $objUserToModif->update($request->all());
+            $objUserToModif->update($request->all()); 
             return response([
-                'message' => 'updated successfully',
+                'message' => 'user updated successfully',
                 // 'user_old_data' => $objUserBefore,
-                'user_new_data' => $objUserToModif,
-                'status' => 200
+                'user_new_data' => $objUserToModif, 
+                'status' => 200 
             ]);
         }
     }
