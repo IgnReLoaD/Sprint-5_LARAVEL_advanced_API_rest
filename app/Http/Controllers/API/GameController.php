@@ -11,7 +11,7 @@ use App\Models\Game;
 class GameController extends Controller
 {
     /**
-     * Postman:  POST /players/{id}/games 
+     * Postman:  POST /players/{id}/games  
      * @param  int  $id_player
      * @return \Illuminate\Http\Response --> message
      */
@@ -22,9 +22,10 @@ class GameController extends Controller
         ]);
         die;
 
-        $authUser = Auth::user()->id;
 
-        if ($authUser == $id_player) { 
+        $idUserLoggedIn = Auth::user()->id;
+
+        if ($idUserLoggedIn == $id_player) { 
             // ENUNCIAT:   En cas que la suma del resultat dels dos daus sigui 7, la partida és guanyada, si no és perduda. 
             $objGame = new Game();
             $objGame->user_id = $id_player;
@@ -33,16 +34,16 @@ class GameController extends Controller
             $objGame->boolWinner = (($objGame->intResult1 + $objGame->intResult2) == 7);
             $objGame->save();
 
-            return response()->json([
-                'Dice 1 = ' => $objGame->intResult1,
-                'Dice 2 = ' => $objGame->intResult2,
-                'Sum two dices = ' => $objGame->intResult1 + $objGame->intResult2,
-                'Result: ' => ($objGame->boolWinner) ? 'won' : 'lost',
-            ]);            
+            return response()->json([ 
+                'Dice 1 = ' => $objGame->intResult1, 
+                'Dice 2 = ' => $objGame->intResult2, 
+                'Sum two dices = ' => $objGame->intResult1 + $objGame->intResult2, 
+                'Result: ' => ($objGame->boolWinner) ? 'won' : 'lost', 
+            ]); 
 
         }else{
             return response([
-                'message' => 'user not found'
+                'message' => 'user not found' 
             ]);
         }
     }
@@ -61,22 +62,22 @@ class GameController extends Controller
         ]);
         die;
 
-        $authUser = Auth::id();
-        $user = User::find($id_user);
+        $idUserLoggedIn = Auth::id();
+        $objUser = User::find($id_user);
 
-        if (!$user) {
+        if (!$objUser) {
             return response([
                 'message' => 'User not found, could not delete their scores!',
                 'status' => 404,
             ]);
-        } elseif($authUser == $id) {
-            $userGames = Game::where('user_id', '=', $id)->first('id');
+        } elseif($idUserLoggedIn == $id_user) {
+            $userGames = Game::where('user_id', '=', $id_user)->first('id');
 
             if($userGames !== null) {
-                Game::where('user_id', $id)->delete();
-                return response(['message' => 'Games deleted from user ' . $user->name]);            
+                Game::where('user_id', $id_user)->delete();
+                return response(['message' => 'Games deleted from user ' . $objUser->name]);            
             } else {
-                return response(['message' => "The user " . $user->name . " don't have any game!"]);
+                return response(['message' => "The user " . $objUser->name . " don't have any game!"]);
             }
         }
     }
