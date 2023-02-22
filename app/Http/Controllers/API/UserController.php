@@ -13,6 +13,9 @@ class UserController extends Controller
 {
     use HasApiTokens;
 
+    // Exercice-1 ... POST /players --> crea un jugador/a. 
+    //                @Params postman: nom, email, contrasenya, confirm-contrasenya
+    //                @Retorna Message Ok/Nok (i graba en MySql tabla Users)
     public function register(Request $request)
     {
         // return response([
@@ -25,7 +28,8 @@ class UserController extends Controller
                 'name' => 'nullable',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|confirmed',
-                'password_confirmation' => 'required'
+                'password_confirmation' => 'required',
+                'sysadmin' => 'nullable'
             ]);
             $fieldsetValidated['name'] = 'Anonymous';
         } else {
@@ -33,21 +37,25 @@ class UserController extends Controller
                 'name' => 'required|max:40|unique:users,name',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|confirmed',
-                'password_confirmation' => 'required'
+                'password_confirmation' => 'required',
+                'sysadmin' => 'nullable'
             ]);
         };
 
         $fieldsetValidated['password'] = Hash::make($request->password);
-        $user = User::create($fieldsetValidated);
+        $objUser = User::create($fieldsetValidated);
 
-        $accessToken = $user->createToken('authToken')->accessToken;
+        $accessToken = $objUser->createToken('authToken')->accessToken;
         return response([
             'message' => 'Successfully registered',
-            'user' => $user, 
+            'user' => $objUser, 
             'access_token' => $accessToken,
         ]);
     }
 
+    // Exercice-2 ... POST /login --> login de jugador/a.
+    //                @Params postman: email, contrasenya 
+    //                @Retorna Bearer-Token (no graba res en MySql)
     public function login(Request $request)
     {
         $loginData = $request->validate([
@@ -71,6 +79,9 @@ class UserController extends Controller
         }
     }
 
+    // Exercice-3 ... POST /logout --> desloguejar usuari jugador/a.
+    //                @Params postman: només el Bearer-Token que ens ha proporcionat el Login.
+    //                @Retorna Message Ok/Nok
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
@@ -81,6 +92,9 @@ class UserController extends Controller
         ]);
     }
 
+    // Exercice-4 ... PUT /players/{id} --> modifica el nom del jugador/a.
+    //                @Params postman: name i mail a modificar, i Bearer-Token per demostrar qui és.
+    //                @Retorna Message Ok/Nok (i graba en MySql tabla Users)
     public function edit(Request $request, $id_player )
     {        
         // return response([
