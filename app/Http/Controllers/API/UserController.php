@@ -18,11 +18,6 @@ class UserController extends Controller
     //                @Retorna Message Ok/Nok (i graba en MySql tabla Users)
     public function register(Request $request)
     {
-        // return response([
-        //     'message' => 'entra en UserController::register'
-        // ]);
-        // die;
-
         if ($request->name == null || $request->name =='') {
             $fieldsetValidated = $request->validate([
                 'name' => 'nullable',
@@ -86,7 +81,8 @@ class UserController extends Controller
     {
         $request->user()->token()->revoke();
         return response([
-            'user' => $request->user(),
+            // CORRECCIONES MENTORIA:  no mostrar info del usuario al hacer Logout
+            // 'user' => $request->user(),
             'message' => 'user logged out',
             'status' => 200
         ]);
@@ -97,11 +93,6 @@ class UserController extends Controller
     //                @Retorna Message Ok/Nok (i graba en MySql tabla Users)
     public function edit(Request $request, $id_player )
     {        
-        // return response([
-        //     'message' => 'debug:  entra en Edit'
-        // ]);
-        // die;
-
         $idUserLoggedIn = Auth::id(); 
         $objUserToModif = User::find($id_player); 
 

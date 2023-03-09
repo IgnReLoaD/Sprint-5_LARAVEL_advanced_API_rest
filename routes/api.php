@@ -77,3 +77,5 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/players/winner', [GameController::class, 'winnerPlayer'])->name('winnerPlayer');
 
 });
+
+?>

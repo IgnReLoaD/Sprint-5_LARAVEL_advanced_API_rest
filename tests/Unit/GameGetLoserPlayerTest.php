@@ -26,8 +26,8 @@ class GameGetLoserPlayerTest extends TestCase
         $objUser = User::factory()->create(); 
         Passport::actingAs($objUser); 
 
-        // mandar a un endPoint una llamada tipo Http DELETE invocando a la ruta ya creada pasándole como Param el ID
-        $response = $this->actingAs($objUser,'api')->delete(route('loserPlayer',$objUser->id));
+        // mandar a un endPoint una llamada tipo Http GET invocando a la ruta ya creada pasándole como Param el ID
+        $response = $this->actingAs($objUser,'api')->get(route('loserPlayer',$objUser->id));
         $response->assertStatus(200);
     }
 }
