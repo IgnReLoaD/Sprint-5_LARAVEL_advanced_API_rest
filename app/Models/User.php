@@ -18,8 +18,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
-        'sysadmin'
+        'password'
     ];
 
     /**
@@ -30,6 +29,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'sysadmin'
     ];
 
     /**
@@ -46,5 +46,20 @@ class User extends Authenticatable
         // return $this->hasMany(Game::class, 'id');
         return $this->hasMany('App\Models\Game');
     } 	
+
+    // USER - Porcentaje de Exito (ganados/intentos) % ... de donde intentos no puede ser 0,
+    // una primera función para encapsular la detección de las partidas del usuario actual
+    public function getUserGames()
+    {
+        return Game::where('user_id', $this->id)->get();
+    }    
+    // una segunda función para Porcentaje Éxito invocando dos veces la Func anterior (totales y ganados)
+    public function userSuccess()
+    {
+        $gamesPlayed = $this->getUserGames()->count();
+        $gamesHasWon = $this->getUserGames()->where('boolWinner',1)->count();
+        // IF ternario para controlar División por 0 y devolver el Cálculo con 2 decimales
+        return ($gamesPlayed > 0) ? round($gamesHasWon / $gamesPlayed * 100, 2) : 0;
+    }
     
 }

@@ -178,18 +178,27 @@ class GameController extends Controller
                 'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", is not SysAdmin. So he/she cannot see the info related to other players."
             ]);
         }else{
-            $arrRankingUsers = User::all()->map(function ($objUser){
-                return [
-                    'player' => $objUser->name,
-                    'success' => $objUser->userSuccess() . ' %',
-                ];
-            })->sortByDesc('success')->values()->toArray();
+            $fieldsetAttempts = DB::select("SELECT COUNT(*) as fieldAttempts FROM games");
+            $fieldsetSuccess = DB::select("SELECT COUNT(*) as fieldSuccess FROM games WHERE boolwinner='1'");
+            if ($fieldsetAttempts[0]->fieldAttempts != 0){
+                $average = $fieldsetSuccess[0]->fieldSuccess / $fieldsetAttempts[0]->fieldAttempts * 100;
+                return response()->json([
+                    'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",
+                    'attempts all players' => $fieldsetAttempts[0]->fieldAttempts,
+                    'success all players' => $fieldsetSuccess[0]->fieldSuccess,
+                    'Avg ranking all players' => round($average,4) . ' %',
+                    'status'  => 200
+                ]);            
+            }else{
+                return response()->json([
+                    'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",
+                    'attempts all players' => "You need to play minimum a game to retrieve any ranking!",
+                    'success all players' => "You need to play minimum a game to retrieve any ranking!",
+                    'Avg ranking all players' => round($average,4) . ' %',
+                    'status'  => 200
+                ]);  
+            }
 
-            return response()->json([
-                'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",                
-                'ranking' => $arrRankingUsers,
-                'status' => 200
-            ]);
         }
     }
 
