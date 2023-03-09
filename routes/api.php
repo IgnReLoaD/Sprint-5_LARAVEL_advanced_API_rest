@@ -9,6 +9,7 @@ use App\Http\Controllers\API\GameController;
 
 // Exercice-1 ... POST /players --> crea un jugador/a. 
 //                @Params postman: nom, email, contrasenya, confirm-contrasenya
+//                        FRONT-END ha de passar 'sysadmin'=1. Si no: graba 0 per defecte.
 //                @Retorna Message Ok/Nok (i graba en MySql tabla Users)
 Route::post('/players', [UserController::class, 'register'])->name('register');
 
