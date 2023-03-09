@@ -13,7 +13,9 @@ use App\Models\User;
 class EditPlayerTest extends TestCase
 {
     use RefreshDatabase;
-
+    /**
+     * @test
+     */
     public function a_player_can_edit_name()
     {
         $this->withoutExceptionHandling();

@@ -13,7 +13,9 @@ use App\Models\User;
 class LogoutPlayerTest extends TestCase
 {
     use RefreshDatabase;
-
+    /**
+     * @test
+     */
     public function a_player_can_be_logged_out()
     {
         // desactivar el manejador de excepciones porque sino el Test no me diría si/no, ya que lo captura el Catch del ExceptionHandling

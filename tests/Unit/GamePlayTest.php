@@ -16,7 +16,9 @@ class GamePlayTest extends TestCase
 {
     // usamos un Trait (clase que agrupa funciones) se ejecuta cada vez después de ejecutar un Test, en este caso este sirve para Refresh
     use RefreshDatabase;
-
+    /**
+     * @test
+     */
     public function logged_user_can_play_a_game() 
     {
         $this->withoutExceptionHandling(); 

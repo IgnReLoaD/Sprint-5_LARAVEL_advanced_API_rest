@@ -15,7 +15,9 @@ use App\Models\Game;
 class GameShowPlayerScoreTest extends TestCase
 {
     use RefreshDatabase;
-
+    /**
+     * @test
+     */
     public function logged_user_can_show_his_games() 
     {
         $this->withoutExceptionHandling(); 
