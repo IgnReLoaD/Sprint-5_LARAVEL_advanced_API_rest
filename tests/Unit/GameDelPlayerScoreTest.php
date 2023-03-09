@@ -26,11 +26,11 @@ class GameDelPlayerScoreTest extends TestCase
         $this->artisan('passport:install');
 
         // Create a single App\Models\User instance...
-        $objUser = User::factory()->create();
-        Passport::actingAs($objUser);
+        $objUser = User::factory()->create(); 
+        Passport::actingAs($objUser); 
 
         // mandar a un endPoint una llamada tipo Http DELETE invocando a la ruta ya creada pasándole como Param el ID
-        $response = $this->actingAs($objUser, 'api')->delete(route('delPlayerScore',$objUser->id));
+        $response = $this->actingAs($objUser,'api')->delete(route('delPlayerScore',$objUser->id));
         $response->assertStatus(200);
     }
 }

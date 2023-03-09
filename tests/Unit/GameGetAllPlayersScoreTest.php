@@ -24,11 +24,11 @@ class GameGetAllPlayersScoreTest extends TestCase
         $this->artisan('passport:install');
 
         // Create a single App\Models\User instance...
-        $objUser = User::factory()->create();
+        $objUser = User::factory()->create(); 
         Passport::actingAs($objUser);
 
         // mandar a un endPoint una llamada tipo Http GET invocando a la ruta ya creada pasándole como Param el ID
-        $response = $this->actingAs($objUser, 'api')->get(route('allPlayersScore',$objUser->id));
+        $response = $this->actingAs($objUser,'api')->get(route('allPlayersScore',$objUser->id));
         $response->assertStatus(200);
     }
 }

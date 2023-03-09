@@ -23,11 +23,11 @@ class GameShowPlayerScoreTest extends TestCase
         $this->withoutExceptionHandling(); 
         $this->artisan('passport:install'); 
         
-        $objUser = User::factory()->create(); 
+        $objUser = User::factory()->create();  
         Passport::actingAs($objUser); 
 
         // mandar a un endPoint una llamada tipo Http GET pero esta vez Invocando a la ruta ya creada pasándole como Param el ID
-        $response = $this->actingAs($objUser, 'api')->get(route('showPlayerScore',$objUser->id));
+        $response = $this->actingAs($objUser,'api')->get(route('showPlayerScore',$objUser->id));
         $response->assertStatus(200);
     }
 }
