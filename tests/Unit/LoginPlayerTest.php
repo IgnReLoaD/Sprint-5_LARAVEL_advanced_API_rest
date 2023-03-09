@@ -13,7 +13,9 @@ use App\Models\User;
 class LoginPlayerTest extends TestCase
 {
     use RefreshDatabase;
-
+    /**
+     * @test
+     */
     public function a_player_can_be_logged_in()
     {
         $this->withoutExceptionHandling();

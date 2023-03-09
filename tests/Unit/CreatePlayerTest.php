@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Passport;
 use App\Models\User;
 
-// TDD Exercice-1 - USER-CREATE
+// TDD Exercice-1 - USER-REGISTER
 class CreatePlayerTest extends TestCase
 {
     // usamos un Trait (clase que agrupa funciones) se ejecuta cada vez después de ejecutar un Test, en este caso este sirve para Refresh
     use RefreshDatabase;
-    // TDD Exercice-1 - USER-REGISTER
+    /**
+     * @test
+     */
     public function a_player_can_be_registered()
     {
         // desactivar el manejador de excepciones porque sino el Test no me diría si/no, ya que lo captura el Catch del ExceptionHandling
