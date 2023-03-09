@@ -18,11 +18,6 @@ class UserController extends Controller
     //                @Retorna Message Ok/Nok (i graba en MySql tabla Users)
     public function register(Request $request)
     {
-        // return response([
-        //     'message' => 'entra en UserController::register'
-        // ]);
-        // die;
-
         if ($request->name == null || $request->name =='') {
             $fieldsetValidated = $request->validate([
                 'name' => 'nullable',
@@ -31,7 +26,8 @@ class UserController extends Controller
                 'password_confirmation' => 'required',
                 'sysadmin' => 'nullable'
             ]);
-            $fieldsetValidated['name'] = 'Anonymous';
+            // Set default values:
+            $fieldsetValidated['name'] = $fieldsetValidated['name'] ?? 'Anonim';
         } else {
             $fieldsetValidated = $request->validate([
                 'name' => 'required|max:40|unique:users,name',
@@ -41,14 +37,16 @@ class UserController extends Controller
                 'sysadmin' => 'nullable'
             ]);
         };
-
+        // Set default values:
+        $fieldsetValidated['sysadmin'] = $fieldsetValidated['sysadmin'] ?? 0;        
         $fieldsetValidated['password'] = Hash::make($request->password);
+        // Create User and get his Token
         $objUser = User::create($fieldsetValidated);
-
         $accessToken = $objUser->createToken('authToken')->accessToken;
         return response([
             'message' => 'Successfully registered',
-            'user' => $objUser, 
+            // CORRECCIONES MENTORIA:  no mostrar info sensible, solo el nombre y listos.
+            'user' => $objUser["name"], 
             'access_token' => $accessToken,
         ]);
     }
@@ -72,7 +70,9 @@ class UserController extends Controller
             $accessToken = $request->user()->createToken('authToken')->accessToken;
 
             return response([
-                'user' => auth()->user(),
+                // CORRECCIONES MENTORIA:  no mostrar info sensible, solo el nombre y listos.
+                'message' => 'Welcome ' . auth()->user()["name"] . "!!",
+                // 'user' => auth()->user(),
                 'access_token' => $accessToken,
                 'status' => 200
             ]);
@@ -86,7 +86,8 @@ class UserController extends Controller
     {
         $request->user()->token()->revoke();
         return response([
-            'user' => $request->user(),
+            // CORRECCIONES MENTORIA:  no mostrar info del usuario al hacer Logout
+            // 'user' => $request->user(),
             'message' => 'user logged out',
             'status' => 200
         ]);
@@ -97,11 +98,6 @@ class UserController extends Controller
     //                @Retorna Message Ok/Nok (i graba en MySql tabla Users)
     public function edit(Request $request, $id_player )
     {        
-        // return response([
-        //     'message' => 'debug:  entra en Edit'
-        // ]);
-        // die;
-
         $idUserLoggedIn = Auth::id(); 
         $objUserToModif = User::find($id_player); 
 
@@ -129,3 +125,5 @@ class UserController extends Controller
         }
     }
 }
+
+?>

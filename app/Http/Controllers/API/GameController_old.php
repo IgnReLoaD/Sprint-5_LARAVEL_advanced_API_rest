@@ -134,19 +134,18 @@ class GameController extends Controller
                 // percentatge d'encert
                 $successAverage = 0;
                 if ($countGames > 0) {
-                    $successAverage = round($countWonGames / $countGames * 100, 2);
+                    $successAverage = ($countWonGames / $countGames) * 100;
                 }
 
                 // preparar dades d'un jugador
                 $userDetails = [
-                    // CORRECCIONS MENTORIA:  no mostrar info rellevant dels usuaris
-                    // 'id' => $user->id,
+                    'id' => $user->id,
                     'name' => $user->name,
-                    // 'email' => $user->email,
-                    // 'sysadmin' => $user->sysadmin ? true : false,
+                    'email' => $user->email,
+                    'sysadmin' => $user->sysadmin ? true : false,
                     'attempts' => $countGames,
                     'success' => $countWonGames,
-                    'average' => $successAverage.' %'
+                    'average' => $successAverage.'%'
                 ];
 
                 // afegir al llistat
@@ -166,6 +165,10 @@ class GameController extends Controller
     //                @Params postman: només el Bearer-Token que ens ha proporcionat el Login.
     //                @Retorna Message Ok/Nok amb el Llistat Ranking (avisa si l'usuari loguejat és Admin o no).
     public function allPlayersRanking(){
+        // return response([
+        //     'message' => 'entra en GameController::allPlayersRanking'
+        // ]);
+        // die;
 
         $idUserLoggedIn = Auth::id();
         $objUser = User::find($idUserLoggedIn);
@@ -175,18 +178,27 @@ class GameController extends Controller
                 'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", is not SysAdmin. So he/she cannot see the info related to other players."
             ]);
         }else{
-            $arrRankingUsers = User::all()->map(function ($objUser){
-                return [
-                    'player' => $objUser->name,
-                    'success' => $objUser->userSuccess() . ' %',
-                ];
-            })->sortByDesc('success')->values()->toArray();
+            $fieldsetAttempts = DB::select("SELECT COUNT(*) as fieldAttempts FROM games");
+            $fieldsetSuccess = DB::select("SELECT COUNT(*) as fieldSuccess FROM games WHERE boolwinner='1'");
+            if ($fieldsetAttempts[0]->fieldAttempts != 0){
+                $average = $fieldsetSuccess[0]->fieldSuccess / $fieldsetAttempts[0]->fieldAttempts * 100;
+                return response()->json([
+                    'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",
+                    'attempts all players' => $fieldsetAttempts[0]->fieldAttempts,
+                    'success all players' => $fieldsetSuccess[0]->fieldSuccess,
+                    'Avg ranking all players' => round($average,4) . ' %',
+                    'status'  => 200
+                ]);            
+            }else{
+                return response()->json([
+                    'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",
+                    'attempts all players' => "You need to play minimum a game to retrieve any ranking!",
+                    'success all players' => "You need to play minimum a game to retrieve any ranking!",
+                    'Avg ranking all players' => round($average,4) . ' %',
+                    'status'  => 200
+                ]);  
+            }
 
-            return response()->json([
-                'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",                
-                'ranking' => $arrRankingUsers,
-                'status' => 200
-            ]);
         }
     }
 
@@ -202,19 +214,18 @@ class GameController extends Controller
                 'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", is not SysAdmin. So he/she cannot see the info related to other players."
             ]);
         }else{
-            $arrRankingUsers = User::all()->map(function ($objUser){
-                return [
-                    'player' => $objUser->name,
-                    'success' => $objUser->userSuccess() . ' %',
-                ];
-            })->sortByDesc('success')->values()->toArray();
-
-            $objLoserPlayer = end($arrRankingUsers);
+            $resultLoserPlayer = DB::select("
+                SELECT user_id, COUNT(*) as attempts_success FROM games
+                WHERE boolWinner=0
+                GROUP BY user_id 
+                ORDER BY attempts_success DESC
+                LIMIT 1
+            ");
+            $objLoserPlayer = User::find($resultLoserPlayer[0]->user_id);
 
             return response()->json([
                 'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",                
-                'loser' => "The worst player is called " . $objLoserPlayer["player"] . ", with " . $objLoserPlayer["success"] . " of rate success :(",                
-                // 'loser' => "The bad player is number " . $objLoserPlayer->id . ", called " . $objLoserPlayer->name . "!!",
+                'loser' => "The bad player is number " . $objLoserPlayer->id . ", called " . $objLoserPlayer->name . "!!",
                 'status'  => 200
             ]);
         }
@@ -232,18 +243,18 @@ class GameController extends Controller
                 'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", is not SysAdmin. So he/she cannot see the info related to other players."
             ]);
         }else{
-            $arrRankingUsers = User::all()->map(function ($objUser){
-                return [
-                    'player' => $objUser->name,
-                    'success' => $objUser->userSuccess() . ' %',
-                ];
-            })->sortByDesc('success')->values()->toArray();
-
-            $objWinnerPlayer = $arrRankingUsers[0];
+            $resultWinnerPlayer = DB::select("
+                SELECT user_id, COUNT(*) as attempts_success FROM games
+                WHERE boolWinner=1
+                GROUP BY user_id
+                ORDER BY attempts_success DESC
+                LIMIT 1
+            ");
+            $objWinnerPlayer = User::find($resultWinnerPlayer[0]->user_id);
 
             return response()->json([
-                'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",
-                'winner' => "The best player is called " . $objWinnerPlayer["player"] . ", with " . $objWinnerPlayer["success"] . " of rate success :)",
+                'message' => "Current logged user is " . $idUserLoggedIn . ", called " . $objUser->name . ", and is SysAdmin. So can see the following info related to other players.",                
+                'winner' => "The best player is number " . $objWinnerPlayer->id . ", called " . $objWinnerPlayer->name . "!!",
                 'status'  => 200
             ]);            
         }

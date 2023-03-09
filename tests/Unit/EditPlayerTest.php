@@ -26,12 +26,14 @@ class EditPlayerTest extends TestCase
         // $this->put('api/players/{id}', [
         // $this->put('api/players/{$objUser->id_user} , [])
         $this->put('api/players/' . $objUser->id, [
-            'name' => 'newName'
+            'name' => 'newName',
+            'sysadmin' => '1'
         ]);
 
         // comprobar que en la BD se haya modificado
         $this->assertDatabaseHas('users',[
-            'name' => 'newName'
+            'name' => 'newName',
+            'sysadmin' => '1'
         ]);
             
     }
